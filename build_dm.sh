@@ -8,7 +8,7 @@ driver_name="Microsoft SQL Server ODBC Driver V1.0 for Linux"
 # required constants
 req_os="Linux";
 req_proc="x86_64";
-req_software=( "wget" "tar" "make" )
+req_software=( "curl" "tar" "make" )
 
 # Create a temp directory for intermediate files
 tmp=${TMPDIR-/tmp}
@@ -89,18 +89,18 @@ function check_for_Linux_x86_64 ()
 }
 
 
-function check_wget
+function check_curl
 {
-    log "Checking that wget is installed"
+    log "Checking that curl is installed"
 
-    # if using a file url, wget is not necessary
+    # if using a file url, curl is not necessary
     if [ "${dm_url##file://}" != "$dm_url" ]; then
         return 0;
     fi
 
-    hash wget &> /dev/null
+    hash curl &> /dev/null
     if [ $? -eq 1 ]; then
-        log "'wget' required to download $dm_name"
+        log "'curl' required to download $dm_name"
         return 1;
     fi
 
@@ -139,7 +139,7 @@ function download
     log "Downloading $dm_url"
 
     # if they use a file:// url then just point the package at that path and return
-    # since wget doesn't support file urls
+    # since curl doesn't support file urls
     if [ ${dm_url##file://} != $dm_url ]; then
         dm_package_path=${dm_url##file://}
         dm_dir=`tar tzf $dm_package_path | head -1 | sed -e 's/\/.*//'`
@@ -149,7 +149,7 @@ function download
         return 0
     fi
 
-    $(wget -a $log_file -P $tmp $dm_url  )
+    curl -fsSL "$dm_url" -o "$dm_package_path"
 
     if [ ! -e $dm_package_path ]; then
         log "Failed to retrieve $dm_name from $dm_url."
@@ -234,7 +234,7 @@ function make_build_msg
 {
     dm_build_msg=(
         "Verifying processor and operating system"
-        "Verifying wget is installed"
+        "Verifying curl is installed"
         "Verifying tar is installed"
         "Verifying make is installed"
         "Downloading $dm_name"
@@ -247,7 +247,7 @@ function make_build_msg
 
 function build
 {
-    local build_steps=( check_for_Linux_x86_64 check_wget check_tar check_make  download unpack configure_dm make_dm install_dm )
+    local build_steps=( check_for_Linux_x86_64 check_curl check_tar check_make  download unpack configure_dm make_dm install_dm )
         make_build_msg
     local build_neutral=( "NOT ATTEMPTED" "NOT ATTEMPTED" "NOT ATTEMPTED" "NOT ATTEMPTED" "NOT ATTEMPTED" "NOT ATTEMPTED" "NOT ATTEMPTED" "NOT ATTEMPTED" "NOT ATTEMPTED" )
     local build_success=( 'OK' 'OK' 'OK' 'OK' 'OK' 'OK' 'OK' 'OK' 'OK' )
