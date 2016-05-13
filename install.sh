@@ -24,7 +24,7 @@ req_libs=""
 real_deb_req_libs=( "libc6" "libkrb5-3" "e2fsprogs" "openssl" )
 
 #this should get renamed to ubuntu_req_libs or something 
-deb_req_libs=( '~i"^libc6$"' '~i"libkrb5\-[0-9]$"' '~i"^e2fsprogs$"' '~i"^openssl$"' )
+deb_req_libs=( 'libc6' 'libkrb5-[0-9]' 'e2fsprogs' 'openssl' )
 
 red_req_libs=( glibc e2fsprogs krb5-libs openssl )
 
